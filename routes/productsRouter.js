@@ -1,10 +1,8 @@
 const express = require('express');
 const ProductsService = require('../services/productsServices');
 const validatorHandler = require('../middlewares/validatorHandler');
-const { createProductSchema, updateProductSchema, getProductSchema} = require('../schemas/productSchema')
-
+const { createProductSchema, updateProductSchema, getProductSchema} = require('../schemas/productSchema');
 const boom = require('@hapi/boom');
-const { ge } = require('faker/lib/locales');
 
 const router = express.Router();
 const service = new ProductsService();

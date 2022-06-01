@@ -1,59 +1,53 @@
+const boom = require('@hapi/boom');
 const faker = require('faker');
+// const getConnection = require('../libs/postgres') No lo necesito porque voy a trabajar con sequelize
+const { models } = require('./../libs/sequelize')
+//sequelize guarda todos los modelos en models. y el nombre del modelo
 
 class UsersService {
+  constructor () {}
 
-  constructor () {
-    this.users = [];
-    this.generate();
+  async create(data) {
+    const newUser = await models.User.create(data);
+    return newUser;
   }
 
-  generate() {
-    for (let index = 0; index < 50; index++) {
-      this.users.push({
-        id: faker.datatype.uuid(),
-        name: faker.name.findName(),
-        email: faker.internet.email(),
-        address: faker.address.streetAddress() + faker.address.city() + faker.address.country(),
-      })
-    }
+  async find() {
+    // const client = await getConnection();
+    // const res = await client.query('SELECT * FROM task');
+    // return res.rows;
+    const res = await models.User.findAll();
+    return res;
   }
 
-  create(user) {
-    this.users.push(user)
+  async findOne(id) {
+    // return this.users.find(user => user.id === id)
+    const user = await models.User.findByPk(id);
+    if (!user) {
+      throw boom.notFound('User not found');
+    };
+    return user;
   }
 
-  find() {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(this.users)
-      }, 1000);
-    })
+  async update(id, changess) {
+    const user = await this.findOne(id);
+    const rta = await user.update(changess);
+    return rta;
   }
 
-  findOne(id) {
-    return this.users.find(user => user.id === id)
-  }
-
-  update(id, user) {
-    const index = this.users.indexOf(this.users.find(item => item.id === id))
-    if (index === -1){
-      return false;
-    } else {
-      this.users.splice(index, 1, user)
-      return true
-    }
-  }
-
-  delete(id) {
-    return new Promise((resolve, reject) => {
-      const index = this.users.indexOf(this.users.find(item => item.id === id))
-      if (index === -1){
-        reject(new Error('User Not Found'))
-      } else {
-        this.users.splice(index, 1)
-        resolve(id)
-      }
-    })
+  async delete(id) {
+    // return new Promise((resolve, reject) => {
+    //   const index = this.users.indexOf(this.users.find(item => item.id === id))
+    //   if (index === -1){
+    //     reject(new Error('User Not Found'))
+    //   } else {
+    //     this.users.splice(index, 1)
+    //     resolve(id)
+    //   }
+    // })
+    const user = await this.findOne(id);
+    await user.destroy();
+    return { id };
   }
 }
 

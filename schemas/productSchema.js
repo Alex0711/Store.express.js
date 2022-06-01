@@ -4,7 +4,7 @@ const Joi = require('joi'); //traigo a joi
 const id = Joi.string().uuid();  //declaro el tipo de dato
 const name = Joi.string().alphanum().min(3).max(15); //no acepta espacios por alphanum
 const price = Joi.number().integer().min(10);
-const image = Joi.string().uri()
+const image = Joi.string().uri() //uri creo que valida si es la url de una imagen
 
 //Los datos que van a recibir el create, update y get(o delete)
 const createProductSchema = Joi.object({

@@ -1,14 +1,18 @@
 const express = require('express');
-const UserService = require('../services/usersService')
+const UserService = require('../services/usersService');
+const validatorHandler = require('../middlewares/validatorHandler');
+const { createUserSchema, updateUserSchema, getUserSchema } = require('../schemas/userSchema');
+const boom = require('@hapi/boom')
 
 const service = new UserService()
 const router = express.Router();
 
 
 //Query parameters... Estos son opcionales
-router.get('/', async (req, res) => { //  /users?limit=10&offset=200
-  const users = await service.find();
-  res.json(users)
+router.get('/',
+  async (req, res, next) => { //  /users?limit=10&offset=200
+    const users = await service.find();
+    res.json(users)
 })
 
 router.get('/:id', (req, res) => {
@@ -20,22 +24,31 @@ router.get('/:id', (req, res) => {
     res.send('No se encontró el usuario')
   }
 })
-
-router.post('/', (req, res) => {
-  const body = req.body;
-  service.create(body);
-  res.status(201).json(body)
+//Hecho en clase!
+router.post('/',
+  validatorHandler(createUserSchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const body = req.body;
+      const newUser = await service.create(body);
+      res.status(201).json(newUser)
+    } catch (err) {
+      next(err)
+    }
 })
 
-router.put('/:id', (req, res) => {
-  const { id } = req.params;
-  const body = req.body;
-  const update = service.update(id, body);
-  if (updated) {
-    res.status(201).send('Updated')
-  } else {
-    res.status(404).send('User Not Found')
-  }
+router.put('/:id',
+  validatorHandler(getUserSchema, 'params'),
+  validatorHandler(updateUserSchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const body = req.body;
+      const update = await service.update(id, body);
+      res.status(201).json(update)
+    } catch (err) {
+      next(err)
+    }
 })
 
 router.delete('/:id', async (req, res) => {
