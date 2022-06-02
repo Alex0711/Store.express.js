@@ -1,6 +1,6 @@
 const Joi = require('joi');
 
-const id = Joi.string().uuid();
+const id = Joi.number();
 const email = Joi.string().email()
 const password = Joi.string().min(8).max(16)
 

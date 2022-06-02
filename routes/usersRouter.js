@@ -1,6 +1,7 @@
 const express = require('express');
 const UserService = require('../services/usersService');
 const validatorHandler = require('../middlewares/validatorHandler');
+const queryValidatorHandler = require('../middlewares/queryValidatorHandler');
 const { createUserSchema, updateUserSchema, getUserSchema } = require('../schemas/userSchema');
 const boom = require('@hapi/boom')
 
@@ -15,18 +16,21 @@ router.get('/',
     res.json(users)
 })
 
-router.get('/:id', (req, res) => {
-  const { id } = req.params;
-  const user = service.findOne(id)
-  if (user) {
-    res.json(user)
-  } else {
-    res.send('No se encontró el usuario')
-  }
+router.get('/:id',
+  validatorHandler(getUserSchema, 'params'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const user = await service.findOne(id);
+      res.json(user);
+    } catch (err) {
+      next(err)
+    }
 })
 //Hecho en clase!
 router.post('/',
   validatorHandler(createUserSchema, 'body'),
+  queryValidatorHandler(),
   async (req, res, next) => {
     try {
       const body = req.body;
@@ -40,6 +44,7 @@ router.post('/',
 router.put('/:id',
   validatorHandler(getUserSchema, 'params'),
   validatorHandler(updateUserSchema, 'body'),
+  queryValidatorHandler(),
   async (req, res, next) => {
     try {
       const { id } = req.params;

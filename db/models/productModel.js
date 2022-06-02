@@ -35,7 +35,7 @@ class Product extends Model {
     return {
       sequelize, //Esto es para conectar con la db
       tableName: PRODUCT_TABLE,
-      modelName: 'Pser', //Con este nombre lo va a guardar dentro de models de sequalize
+      modelName: 'User', //Con este nombre lo va a guardar dentro de models de sequalize
       timestamps: false //para que no agregue el momento de creación y actualización (los agrega por defecto)
     }
   }
