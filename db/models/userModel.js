@@ -18,6 +18,11 @@ const UserSchema = {
     allowNull: false,
     type: DataTypes.STRING
   },
+  role: {
+    allowNull: false,
+    type: DataTypes.STRING,
+    defaultValue: 'customer '
+  },
   createdAt: { //en JS nos manejamos con mayus para separar palabras
     allowNull: false,
     type: DataTypes.DATE, //una fecha

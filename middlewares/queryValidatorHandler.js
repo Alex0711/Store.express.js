@@ -1,14 +1,18 @@
 const boom = require('@hapi/boom');
 const { models } = require('../libs/sequelize');
 
-function queryValidatorHandler () {
+function queryValidatorHandler (table, field) {
   return async (req, res, next) => {
     const data = req.body;
-    const user = await models.User.findOne({ where: { email: data.email }});
 
-    if (user) {
-      return next(boom.conflict('User already exists'));
+    if (data[field]) {
+      const user = await table.findOne({ where: { [field] : data[field] }})
+      console.log(user)
+      if (user) {
+        return next(boom.conflict('User already exists'));
+      }
     }
+    console.log('pasó el query')
     next()
   }
 }

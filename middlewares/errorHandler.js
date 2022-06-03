@@ -19,4 +19,12 @@ function boomErrorHandler (err, req, res, next) { //Acá agarra solo booms
   next(err)
 }
 
-module.exports = { logErrors, errorHandler, boomErrorHandler }
+function sequelizeErrorHandler (err, req, res, next) {
+  if (err.message === "Validation error"){
+    const { errors } = err
+    return res.status(409).json(errors);
+  }
+  next(err)
+}
+
+module.exports = { logErrors, errorHandler, boomErrorHandler, sequelizeErrorHandler }

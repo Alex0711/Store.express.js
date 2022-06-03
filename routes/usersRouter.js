@@ -4,6 +4,7 @@ const validatorHandler = require('../middlewares/validatorHandler');
 const queryValidatorHandler = require('../middlewares/queryValidatorHandler');
 const { createUserSchema, updateUserSchema, getUserSchema } = require('../schemas/userSchema');
 const boom = require('@hapi/boom')
+const { models } = require('../libs/sequelize');
 
 const service = new UserService()
 const router = express.Router();
@@ -30,7 +31,7 @@ router.get('/:id',
 //Hecho en clase!
 router.post('/',
   validatorHandler(createUserSchema, 'body'),
-  queryValidatorHandler(),
+  queryValidatorHandler(models.User, 'email'),
   async (req, res, next) => {
     try {
       const body = req.body;
@@ -44,7 +45,7 @@ router.post('/',
 router.put('/:id',
   validatorHandler(getUserSchema, 'params'),
   validatorHandler(updateUserSchema, 'body'),
-  queryValidatorHandler(),
+  queryValidatorHandler(models.User, 'email'),
   async (req, res, next) => {
     try {
       const { id } = req.params;

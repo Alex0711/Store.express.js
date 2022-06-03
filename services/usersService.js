@@ -1,5 +1,4 @@
 const boom = require('@hapi/boom');
-const faker = require('faker');
 // const getConnection = require('../libs/postgres') No lo necesito porque voy a trabajar con sequelize
 const { models } = require('./../libs/sequelize')
 //sequelize guarda todos los modelos en models. y el nombre del modelo
