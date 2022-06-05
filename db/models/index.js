@@ -9,6 +9,9 @@ function setupModels(sequelize) {
   Product.init(ProductSchema, Product.config(sequelize));
   Customer.init(CustomerSchema, Customer.config(sequelize));
   //Entiendo que el init crea la tabla, le paso el schema y la configuración
+
+  User.associate(sequelize.models);
+  Customer.associate(sequelize.models);
 }
 
 module.exports = setupModels;

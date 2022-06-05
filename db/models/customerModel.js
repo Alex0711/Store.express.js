@@ -1,4 +1,5 @@
 const { Model, DataTypes, Sequelize} = require('sequelize');
+const { USER_TABLE } = require('./userModel')
 
 const CUSTOMER_TABLE = 'customers' //el nombre de la tabla que estoy creando
 
@@ -36,13 +37,25 @@ const CustomerSchema = {
     type: DataTypes.DATE, //una fecha
     field: 'create_at', //Pero en la db las separamos con guion bajo
     defaultValue: Sequelize.NOW //por defecto, el momento en que se crea
+  },
+  userId: {
+    field: 'user_id',
+    allowNull: false,
+    unique: true,
+    type: DataTypes.INTEGER,
+    references: {
+      model: USER_TABLE,
+      key: 'id'
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'SET NULL'
   }
 }
 
 //Le agrego todas las propiedades de Models. Es donde está cargado SQL
 class Customer extends Model {
-  static associate() {
-    //
+  static associate(models) {
+    this.belongsTo(models.User, {as: 'user'})
   }
   static config(sequelize) {
     return {
