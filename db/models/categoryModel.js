@@ -1,10 +1,9 @@
 const { Model, DataTypes, Sequelize} = require('sequelize');
-const { CATEGORY_TABLE } = require('./categoryModel')
 
-const PRODUCT_TABLE = 'products';
+const CATEGORY_TABLE = 'categories'
 
 
-const ProductSchema = {
+const CategorySchema = {
   id: {
     allowNull: false,
     autoIncrement: true,
@@ -14,55 +13,36 @@ const ProductSchema = {
   name: {
     allowNull: false,
     type: DataTypes.STRING(25),
+    unique: true
   },
   image: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  description: {
-    type: DataTypes.TEXT,
     allowNull: false,
-  },
-  price: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  price: {
-    allowNull: false,
-    type: DataTypes.INTEGER
+    type: DataTypes.STRING()
   },
   createdAt: { //en JS nos manejamos con mayus para separar palabras
     allowNull: false,
     type: DataTypes.DATE, //una fecha
     field: 'create_at', //Pero en la db las separamos con guion bajo
     defaultValue: Sequelize.NOW //por defecto, el momento en que se crea
-  },
-  categoryId: {
-    field: 'category_id',
-    allowNull: false,
-    type: DataTypes.INTEGER,
-    references: {
-      model: CATEGORY_TABLE,
-      key: 'id'
-    },
-    onUpdate: 'CASCADE',
-    onDelete: 'SET NULL'
   }
 }
 
 //Le agrego todas las propiedades de Models. Es donde está cargado SQL
-class Product extends Model {
+class Category extends Model {
   static associate(models) {
-    this.belongsTo(models.Category, {as: 'category'})
+    this.hasMany(models.Product, {
+      as: 'products',
+      foreignKey: 'categoryId'
+    })
   }
   static config(sequelize) {
     return {
       sequelize, //Esto es para conectar con la db
-      tableName: PRODUCT_TABLE,
-      modelName: 'Product', //Con este nombre lo va a guardar dentro de models de sequalize
+      tableName: CATEGORY_TABLE,
+      modelName: 'Category', //Con este nombre lo va a guardar dentro de models de sequalize
       timestamps: false //para que no agregue el momento de creación y actualización (los agrega por defecto)
     }
   }
 }
 
-module.exports = { PRODUCT_TABLE, ProductSchema, Product};
+module.exports = { CATEGORY_TABLE, CategorySchema, Category};
