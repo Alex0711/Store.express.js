@@ -2,7 +2,7 @@ const Joi = require('joi'); //traigo a joi
 
 //Acá solo creo los campos que voy a validar
 const id = Joi.number().integer();  //declaro el tipo de dato
-const name = Joi.string().alphanum().min(3).max(15); //no acepta espacios por alphanum
+const name = Joi.string().min(3).max(15); //no acepta espacios por alphanum
 const description = Joi.string().min(10).max(255)
 const price = Joi.number().integer().min(10);
 const image = Joi.string().uri(); //uri creo que valida si es la url de una imagen

@@ -31,13 +31,12 @@ router.get('/:id',
 })
 
 //Método POST
-router.post('/', (req, res) => {
-  const body = req.body;  //la info del req llega en el body. Acá la capturo
-  const newProduct = service.create(body);
-  res.status(201).json({   //respondo que fue creado
-    message: 'created',
-    data: newProduct
-  })
+router.post('/',
+  validatorHandler(createProductSchema, 'body'),
+  async (req, res) => {
+    const body = req.body;  //la info del req llega en el body. Acá la capturo
+    const newProduct = await service.create(body);
+    res.status(201).json(newProduct)
 })
 
 //Método PATCH... Si lo cambio por put funciona igual. Es solo convención
