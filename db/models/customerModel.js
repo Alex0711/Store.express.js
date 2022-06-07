@@ -55,7 +55,11 @@ const CustomerSchema = {
 //Le agrego todas las propiedades de Models. Es donde está cargado SQL
 class Customer extends Model {
   static associate(models) {
-    this.belongsTo(models.User, {as: 'user'})
+    this.belongsTo(models.User, {as: 'user'});
+    this.hasMany(models.Order, {
+      as: 'orders',
+      foreignKey: 'customerId'
+    })
   }
   static config(sequelize) {
     return {
