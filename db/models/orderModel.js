@@ -11,6 +11,20 @@ const OrderSchema = {
     primaryKey: true,
     type: DataTypes.INTEGER
   },
+  products: {
+    allowNull: false,
+    type: DataTypes.ARRAY(DataTypes.JSON),
+  },
+  pay: {
+    allowNull: false,
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  delivered: {
+    allowNull: false,
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
   customerId: {
     field: 'customer_id',
     allowNull: false,
@@ -33,7 +47,7 @@ const OrderSchema = {
 //Le agrego todas las propiedades de Models. Es donde está cargado SQL
 class Order extends Model {
   static associate(models) {
-    this.belongsTo(models.User, {as: 'user'})
+    this.belongsTo(models.Customer, {as: 'customer'})
   }
   static config(sequelize) {
     return {
