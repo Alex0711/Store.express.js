@@ -1,32 +1,38 @@
 const { Model, DataTypes, Sequelize} = require('sequelize');
-const { CUSTOMER_TABLE } = require('./customerModel')
+const { ORDER_TABLE } = require('./orderModel');
+const { PRODUCT_TABLE } = require('./productModel');
 
-const ORDER_TABLE = 'orders'
+const ORDER_PRODUCT_TABLE = 'orders_products'
 
 
-const OrderSchema = {
+const OrderProductSchema = {
   id: {
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
     type: DataTypes.INTEGER
   },
-  pay: {
+  amount: {
     allowNull: false,
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
+    type: DataTypes.INTEGER
   },
-  delivered: {
-    allowNull: false,
-    type: DataTypes.BOOLEAN,
-    defaultValue: false,
-  },
-  customerId: {
-    field: 'customer_id',
+  orderId: {
+    field: 'order_id',
     allowNull: false,
     type: DataTypes.INTEGER,
     references: {
-      model: CUSTOMER_TABLE,
+      model: ORDER_TABLE,
+      key: 'id'
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'SET NULL'
+  },
+  productId: {
+    field: 'product_id',
+    allowNull: false,
+    type: DataTypes.INTEGER,
+    references: {
+      model: PRODUCT_TABLE,
       key: 'id'
     },
     onUpdate: 'CASCADE',
@@ -41,18 +47,18 @@ const OrderSchema = {
 }
 
 //Le agrego todas las propiedades de Models. Es donde está cargado SQL
-class Order extends Model {
+class OrderProduct extends Model {
   static associate(models) {
-    this.belongsTo(models.Customer, {as: 'customer'})
+    // this.belongsTo(models.Customer, {as: 'customer'})
   }
   static config(sequelize) {
     return {
       sequelize, //Esto es para conectar con la db
-      tableName: ORDER_TABLE,
-      modelName: 'Order', //Con este nombre lo va a guardar dentro de models de sequalize
+      tableName: ORDER_PRODUCT_TABLE,
+      modelName: 'OrderProduct', //Con este nombre lo va a guardar dentro de models de sequalize
       timestamps: false //para que no agregue el momento de creación y actualización (los agrega por defecto)
     }
   }
 }
 
-module.exports = { ORDER_TABLE, OrderSchema, Order};
+module.exports = { ORDER_PRODUCT_TABLE, OrderProductSchema, OrderProduct};
