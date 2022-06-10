@@ -5,8 +5,10 @@ const options = {}
 
 if (config.isProd) { //si está en producción le paso connectionString y ssl
   options.connectionString = config.dbUrl;
-  options.ssl = {
-    rejectUnauthorized: false
+  options.dialectOptions = {
+    ssl: {
+      rejectUnauthorized: false
+    }
   }
 } else { //si está en dev, le paso solo connectionString
     // Protejo los datos
