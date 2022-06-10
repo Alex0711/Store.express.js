@@ -38,12 +38,29 @@ const OrderSchema = {
     field: 'create_at', //Pero en la db las separamos con guion bajo
     defaultValue: Sequelize.NOW //por defecto, el momento en que se crea
   },
+  total: {
+    type: DataTypes.VIRTUAL,
+    get() {
+      if (this.items.length > 0) {
+        return this.items.reduce((total, item) => {
+          return total + (item.price * item.OrderProduct.amount)
+        }, 0)
+      }
+      return 0;
+    }
+  },
 }
 
 //Le agrego todas las propiedades de Models. Es donde está cargado SQL
 class Order extends Model {
   static associate(models) {
-    this.belongsTo(models.Customer, {as: 'customer'})
+    this.belongsTo(models.Customer, {as: 'customer'});
+    this.belongsToMany(models.Product, { //le paso la tabla con la que quiero conectar
+      as: 'items',
+      through: models.OrderProduct, //Es latabla a travez de la cual me conecto
+      foreignKey: 'orderId',
+      otherKey: 'productId'
+    })
   }
   static config(sequelize) {
     return {

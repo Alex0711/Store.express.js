@@ -1,7 +1,7 @@
 const express = require('express');
 const OrderService = require('../services/orderService');
 const validatorHandler = require('../middlewares/validatorHandler');
-const { createOrderSchema, updateOrderSchema, getOrderSchema } = require('../schemas/orderSchema');
+const { createOrderSchema, updateOrderSchema, getOrderSchema, addItemSchema } = require('../schemas/orderSchema');
 const { models } = require('../libs/sequelize');
 
 const service = new OrderService()
@@ -26,7 +26,7 @@ router.get('/:id',
       next(err)
     }
 })
-//Hecho en clase!
+
 router.post('/',
   validatorHandler(createOrderSchema, 'body'),
   // queryValidatorHandler(models.User, 'email'), para evitar doble consulta
@@ -65,6 +65,19 @@ router.delete('/:id', async (req, res) => {
       message: err.message
     })
   }
+})
+
+router.post('/add-item',
+  validatorHandler(addItemSchema, 'body'),
+  // queryValidatorHandler(models.User, 'email'), para evitar doble consulta
+  async (req, res, next) => {
+    try {
+      const body = req.body;
+      const newItem = await service.addItem(body);
+      res.status(201).json(newItem)
+    } catch (err) {
+      next(err)
+    }
 })
 
 module.exports = router;

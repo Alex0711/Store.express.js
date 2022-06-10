@@ -1,7 +1,7 @@
 const express = require('express');
 const ProductsService = require('../services/productsServices');
 const validatorHandler = require('../middlewares/validatorHandler');
-const { createProductSchema, updateProductSchema, getProductSchema} = require('../schemas/productSchema');
+const { createProductSchema, updateProductSchema, getProductSchema, queryProductSchema} = require('../schemas/productSchema');
 const boom = require('@hapi/boom');
 
 const router = express.Router();
@@ -11,9 +11,15 @@ router.get('/filter', (req, res) => {
   res.send('Soy un filtro :)')
 });
 
-router.get('/', async (req, res) => {
-  const products = await service.find()
-  res.status(200).json(products)
+router.get('/',
+  validatorHandler(queryProductSchema, 'query'),
+  async (req, res, next) => {
+    try {
+      const products = await service.find(req.query)
+      res.status(200).json(products)
+    } catch(error) {
+      next(error);
+    }
 })
 
 //para recibir un solo dato en el parametro
@@ -55,14 +61,17 @@ router.patch('/:id', async (req, res) => {
 })
 
 //Método PUT... La idea es recibir en el body el objeto completo
-router.put('/:id', (req, res) => {
-  const { id } = req.params;
-  const body = req.body;
-  const newProduct = service.update(id, body)
-  if (newProduct) {
-    res.status(201).json(newProduct)
-  }
-})
+router.put('/:id',
+  validatorHandler(updateProductSchema, 'body'),
+  validatorHandler(getProductSchema, 'params'),
+  async (req, res) => {
+    const { id } = req.params;
+    const body = req.body;
+    const newProduct = await service.update(id, body)
+    if (newProduct) {
+      res.status(201).json(newProduct)
+    }
+  })
 
 //Método DELETE
 router.delete('/:id', async (req, res, next) => {

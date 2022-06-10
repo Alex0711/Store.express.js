@@ -3,6 +3,7 @@ const boom = require('@hapi/boom');
 // const pool = require('../libs/postgresPool');
 const sequelize = require('../libs/sequelize');
 const { models } = require('./../libs/sequelize');
+const { Op } = require('sequelize');
 
 class ProductsService {
 
@@ -37,13 +38,41 @@ class ProductsService {
     return newProduct;
   }
 
-  async find() {
+  async find(query) {
+              //1er acercamiento
     // const query = 'SELECT * FROM task';
     // const [data, metadata] = await sequelize.query(query);
     // return { data, metadata};
-    const products = await models.Product.findAll({
-      include: ['category']
-    });
+
+              //algo un poco más elegante
+    // const products = await models.Product.findAll({
+    //   include: ['category'],
+    // });
+    // return products;
+
+              //con paginación
+    const options = {
+      include: ['category'],
+      where: {}
+    }
+
+    const { limit, offset } = query;
+    if(limit && offset) {
+      options.limit = limit;
+      options.offset = offset;
+    }
+
+    const { price } = query;
+    if (price) {
+      options.where.price = price
+    }
+
+    const { priceMin, priceMax } = query;
+    if (priceMin && priceMax) {
+      options.where.price = {[Op.between]:[priceMin, priceMax]}
+    }
+
+    const products = await models.Product.findAll(options);
     return products;
   }
 
