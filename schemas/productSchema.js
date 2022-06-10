@@ -41,7 +41,7 @@ const queryProductSchema = Joi.object({
   price,
   priceMin,
   priceMax: priceMax.when('priceMin', { //le digo que vea el campo priceMin
-    is: Joi.number().integer(), //si es un entero
+    is: Joi.number().integer().required(), //si es un entero
     then: Joi.required() //entonces priceMax es obligatorio
   })
 });
