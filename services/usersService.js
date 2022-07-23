@@ -2,12 +2,18 @@ const boom = require('@hapi/boom');
 // const getConnection = require('../libs/postgres') No lo necesito porque voy a trabajar con sequelize
 const { models } = require('./../libs/sequelize')
 //sequelize guarda todos los modelos en models. y el nombre del modelo
+const bcrypt = require('bcrypt');
 
 class UsersService {
   constructor () {}
 
   async create(data) {
-    const newUser = await models.User.create(data);
+    const userHash = await bcrypt.hash(data.password, 10);
+    const newUser = await models.User.create({
+      ...data,
+      password: userHash,
+    });
+    delete newUser.dataValues.password
     return newUser;
   }
 

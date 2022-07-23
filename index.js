@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const routerApi = require('./routes')
 const { logErrors, errorHandler, boomErrorHandler, sequelizeErrorHandler } = require('./middlewares/errorHandler') //debe estar debajo del routing
+const { checkApiKey } = require('./middlewares/authHandler')
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,7 +22,9 @@ const options = {
 // app.use(cors(options))
 app.use(cors()); //si no le paso parámetros le doy acceso a todo el mundo. Hacerlo solo en API públicas!!!
 
-
+app.get('/probando', checkApiKey, (req, res) => {
+  res.send('Pasó');
+})
 
 routerApi(app);
 

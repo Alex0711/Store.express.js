@@ -42,7 +42,7 @@ module.exports = {
       onUpdate: 'CASCADE',
       onDelete: 'SET NULL'
     },
-    createdAt: { //en JS nos manejamos con mayus para separar palabras
+    createdAt: {
       allowNull: false,
       type: DataTypes.DATE, //una fecha
       field: 'create_at', //Pero en la db las separamos con guion bajo

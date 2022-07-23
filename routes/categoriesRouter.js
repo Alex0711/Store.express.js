@@ -4,13 +4,14 @@ const validatorHandler = require('../middlewares/validatorHandler');
 const queryValidatorHandler = require('../middlewares/queryValidatorHandler');
 const { createCategorySchema, updateCategorySchema, getCategorySchema } = require('../schemas/categorySchema');
 const { models } = require('../libs/sequelize');
+const { checkApiKey } = require('./../middlewares/authHandler')
 
 const service = new CategoryService()
 const router = express.Router();
 
 
 //Query parameters... Estos son opcionales
-router.get('/',
+router.get('/', checkApiKey,
   async (req, res, next) => { //  /users?limit=10&offset=200
     const users = await service.find();
     res.json(users)
