@@ -29,6 +29,7 @@ const CategorySchema = {
 
 //Le agrego todas las propiedades de Models. Es donde está cargado SQL
 class Category extends Model {
+
   static associate(models) {
     this.hasMany(models.Product, {
       as: 'products',

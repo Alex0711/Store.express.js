@@ -1,10 +1,9 @@
 const express = require('express');
 const CategoryService = require('../services/categoryService');
 const validatorHandler = require('../middlewares/validatorHandler');
-const queryValidatorHandler = require('../middlewares/queryValidatorHandler');
 const { createCategorySchema, updateCategorySchema, getCategorySchema } = require('../schemas/categorySchema');
-const { models } = require('../libs/sequelize');
-const { checkApiKey } = require('./../middlewares/authHandler')
+const { checkApiKey, checkRole } = require('./../middlewares/authHandler');
+const passport = require('passport');
 
 const service = new CategoryService()
 const router = express.Router();
@@ -13,23 +12,31 @@ const router = express.Router();
 //Query parameters... Estos son opcionales
 router.get('/', checkApiKey,
   async (req, res, next) => { //  /users?limit=10&offset=200
-    const users = await service.find();
-    res.json(users)
+    try {
+      const users = await service.find();
+      res.json(users)
+    } catch (err) {
+      next(err);
+    }
 })
 
 router.get('/:id',
+  passport.authenticate('jwt', { session: false }),
   validatorHandler(getCategorySchema, 'params'),
   async (req, res, next) => {
     try {
       const { id } = req.params;
-      const user = await service.findOne(id);
-      res.json(user);
+      const category = await service.findOne(id);
+      res.json(category);
     } catch (err) {
       next(err)
     }
 })
+
 //Hecho en clase!
 router.post('/',
+  passport.authenticate('jwt', { session: false }),
+  checkRole('admin'),
   validatorHandler(createCategorySchema, 'body'),
   // queryValidatorHandler(models.User, 'email'), para evitar doble consulta
   async (req, res, next) => {

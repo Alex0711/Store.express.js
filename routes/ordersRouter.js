@@ -2,7 +2,8 @@ const express = require('express');
 const OrderService = require('../services/orderService');
 const validatorHandler = require('../middlewares/validatorHandler');
 const { createOrderSchema, updateOrderSchema, getOrderSchema, addItemSchema } = require('../schemas/orderSchema');
-const { models } = require('../libs/sequelize');
+const { checkRole } = require('../middlewares/authHandler')
+const passport = require('passport');
 
 const service = new OrderService()
 const router = express.Router();
@@ -10,9 +11,15 @@ const router = express.Router();
 
 //Query parameters... Estos son opcionales
 router.get('/',
+  passport.authenticate('jwt', { session: false }),
+  checkRole('admin', 'customer '),
   async (req, res, next) => { //  /users?limit=10&offset=200
-    const orders = await service.find();
-    res.json(orders)
+    try {
+      const orders = await service.find(req.user);
+      res.json(orders)
+    } catch (err) {
+      next(err);
+    }
 })
 
 router.get('/:id',
@@ -28,12 +35,11 @@ router.get('/:id',
 })
 
 router.post('/',
-  validatorHandler(createOrderSchema, 'body'),
+  passport.authenticate('jwt', { session: false }),
   // queryValidatorHandler(models.User, 'email'), para evitar doble consulta
   async (req, res, next) => {
     try {
-      const body = req.body;
-      const newCategory = await service.create(body);
+      const newCategory = await service.create(req.user.sub);
       res.status(201).json(newCategory)
     } catch (err) {
       next(err)

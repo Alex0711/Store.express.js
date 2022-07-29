@@ -22,6 +22,8 @@ const options = {
 // app.use(cors(options))
 app.use(cors()); //si no le paso parámetros le doy acceso a todo el mundo. Hacerlo solo en API públicas!!!
 
+require('./utils/auth');
+
 app.get('/probando', checkApiKey, (req, res) => {
   res.send('Pasó');
 })

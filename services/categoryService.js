@@ -15,15 +15,13 @@ class CategoryService {
   }
 
   async findOne(id) {
-    return new Promise(async (resolve, reject) => {
-      const category = await models.Category.findByPk(id, {
-        include: ['products']
-      });
-      if (!category) {
-        reject(boom.notFound('Category not found'));
-      }
-      resolve(category)
-    })
+    const category = await models.Category.findByPk(id, {
+      include: ['products']
+    });
+    if (!category) {
+      throw boom.notFound("Category not found :')");
+    };
+    return category;
   }
 
   async update(id, changess) {
